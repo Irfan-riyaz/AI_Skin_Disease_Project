@@ -1,0 +1,12 @@
+AI Skin Report
+Model: Skin_Cancer_Model.h5
+Model Loaded: True
+Image: C:\AI_Skin_Disease_Project\backend\uploads\skin diseasee dang.jpg
+disease: Melanoma (Skin Cancer)
+cause: Excessive sun exposure, UV radiation, genetic predisposition, irregular moles
+accuracy: 78.9%
+confidence_score: 78.91581058502197
+risk: High Risk
+recommendations: ['Consult a dermatologist immediately for urgent evaluation', 'Consider skin biopsy for histopathological confirmation', 'Seek specialist oncology consultation for treatment planning', 'Avoid further sun exposure and use SPF 50+ sunscreen']
+dermatologists: ['Dr. Deborah S. Sarnoff - Board Certified Dermatologic Surgeon, Mohs Surgery Specialist', 'Dr. Ronald L. Moy - Director of Facial Plastic Surgery, UCLA Dermatology', 'Dr. Murad Alam - Chief, Section of Cutaneous Surgery, Northwestern Medicine', 'Dr. Elizabeth Tanzi - Founder, Capital Laser & Skin Care (Melanoma Specialist)']
+gradcam: gradcam_skin diseasee dang.jpg
