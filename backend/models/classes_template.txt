@@ -1,0 +1,95 @@
+Acne Vulgaris
+Acne Comedonica
+Acne Papulosa
+Acne Pustulosa
+Acne Papulopustulosa
+Nodular Acne
+Cystic Acne
+Nodulocystic Acne
+Acne Conglobata
+Acne Fulminans
+Adult Acne
+Hormonal Acne
+Mechanical Acne (Acne Mechanica)
+Drug-Induced Acne
+Steroid Acne
+Occupational Acne
+Pomade Acne
+Neonatal Acne
+Infantile Acne
+Excoriated Acne
+Acne Keloidalis Nuchae
+Atopic Dermatitis
+Infantile Atopic Dermatitis
+Adult Atopic Dermatitis
+Allergic Contact Dermatitis
+Irritant Contact Dermatitis
+Nummular Eczema
+Discoid Eczema
+Dyshidrotic Eczema
+Pompholyx
+Seborrheic Dermatitis
+Stasis Dermatitis
+Asteatotic Eczema
+Neurodermatitis (Lichen Simplex Chronicus)
+Hand Eczema
+Foot Eczema
+Photoallergic Dermatitis
+Phototoxic Dermatitis
+Psoriasis Vulgaris
+Plaque Psoriasis
+Guttate Psoriasis
+Inverse Psoriasis
+Flexural Psoriasis
+Pustular Psoriasis
+Generalized Pustular Psoriasis
+Localized Pustular Psoriasis
+Palmoplantar Psoriasis
+Palmoplantar Pustulosis
+Erythrodermic Psoriasis
+Nail Psoriasis
+Scalp Psoriasis
+Psoriatic Arthritis
+Acute Urticaria
+Chronic Urticaria
+Chronic Spontaneous Urticaria
+Chronic Inducible Urticaria
+Dermatographic Urticaria
+Cold Urticaria
+Heat Urticaria
+Cholinergic Urticaria
+Pressure Urticaria
+Solar Urticaria
+Aquagenic Urticaria
+Vibratory Urticaria
+Exercise-Induced Urticaria
+Contact Urticaria
+Angioedema
+Rosacea
+Erythematotelangiectatic Rosacea
+Papulopustular Rosacea
+Phymatous Rosacea
+Rhinophyma
+Ocular Rosacea
+Granulomatous Rosacea
+Steroid-Induced Rosacea
+Dermatophytosis
+Tinea Corporis
+Tinea Cruris
+Tinea Pedis
+Tinea Capitis
+Tinea Barbae
+Tinea Faciei
+Tinea Manuum
+Tinea Unguium
+Onychomycosis
+Candidiasis
+Cutaneous Candidiasis
+Intertrigo
+Oral Candidiasis
+Vulvovaginal Candidiasis
+Pityriasis Versicolor
+Malassezia Folliculitis
+Subcutaneous Mycosis
+Chromoblastomycosis
+Sporotrichosis

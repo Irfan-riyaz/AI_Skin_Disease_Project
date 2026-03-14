@@ -1,0 +1,100 @@
+Acne
+Actinic_Keratosis
+Benign_tumors
+Bullous
+Candidiasis
+DrugEruption
+Eczema
+Vascular_Tumors
+Vasculitis
+Vitiligo
+Warts
+Infestations_Bites
+Lichen
+Lupus
+Moles
+Psoriasis
+Rosacea
+Seborrh_Keratoses
+SkinCancer
+Sun_Sunlight_Damage
+Tinea
+Unknown_Normal
+Cholinergic Urticaria
+Chromoblastomycosis
+Chronic Inducible Urticaria
+Chronic Spontaneous Urticaria
+Chronic Urticaria
+Cold Urticaria
+Contact Urticaria
+Cutaneous Candidiasis
+Cystic Acne
+Dermatographic Urticaria
+Dermatophytosis
+Discoid Eczema
+Drug-Induced Acne
+Dyshidrotic Eczema
+Erythematotelangiectatic Rosacea
+Erythrodermic Psoriasis
+Excoriated Acne
+Exercise-Induced Urticaria
+Flexural Psoriasis
+Foot Eczema
+Generalized Pustular Psoriasis
+Granulomatous Rosacea
+Guttate Psoriasis
+Hand Eczema
+Heat Urticaria
+Hormonal Acne
+Infantile Acne
+Infantile Atopic Dermatitis
+Intertrigo
+Inverse Psoriasis
+Irritant Contact Dermatitis
+Localized Pustular Psoriasis
+Malassezia Folliculitis
+Mechanical Acne _Acne Mechanica_
+Nail Psoriasis
+Neonatal Acne
+Neurodermatitis _Lichen Simplex Chronicus_
+Nodular Acne
+Nodulocystic Acne
+Nummular Eczema
+Occupational Acne
+Ocular Rosacea
+Onychomycosis
+Oral Candidiasis
+Palmoplantar Psoriasis
+Palmoplantar Pustulosis
+Papulopustular Rosacea
+Photoallergic Dermatitis
+Phototoxic Dermatitis
+Phymatous Rosacea
+Pityriasis Versicolor
+Plaque Psoriasis
+Pomade Acne
+Pompholyx
+Pressure Urticaria
+Psoriasis Vulgaris
+Psoriatic Arthritis
+Pustular Psoriasis
+Rhinophyma
+Rosacea
+Scalp Psoriasis
+Seborrheic Dermatitis
+Solar Urticaria
+Sporotrichosis
+Stasis Dermatitis
+Steroid Acne
+Steroid-Induced Rosacea
+Subcutaneous Mycosis
+Tinea Barbae
+Tinea Capitis
+Tinea Corporis
+Tinea Cruris
+Tinea Faciei
+Tinea Manuum
+Tinea Pedis
+Tinea Unguium
+Vibratory Urticaria
+Vulvovaginal Candidiasis
