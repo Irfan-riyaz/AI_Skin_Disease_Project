@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin - Binary Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-card{max-width:720px;margin:40px auto;padding:24px;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+        label{display:block;margin-top:12px;font-weight:700}
+        input,select{width:100%;padding:10px;margin-top:6px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box}
+        button{padding:10px 16px;background:#0a3d62;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:14px;margin-right:8px}
+        button:hover{background:#062942}
+        button.secondary{background:#7f8c8d}
+        button.secondary:hover{background:#708078}
+        .info-box{background:#e3f2fd;border-left:4px solid #2196f3;padding:12px;border-radius:4px;margin-top:12px;color:#0d47a1;font-size:13px}
+    </style>
+</head>
+<body>
+<header class="navbar">
+    <div class="logo">SkinCare AI - Admin</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('result') }}">Results</a>
+    </nav>
+</header>
+
+<div class="admin-card">
+    <h2>Binary Model Settings</h2>
+    <p>Adjust how single-output (binary) models map predictions to disease names.</p>
+    
+    <form method="post" action="{{ url_for('admin') }}">
+        <label for="positive_class">What does a higher model output indicate?</label>
+        <select id="positive_class" name="positive_class">
+            <option value="melanoma" {% if positive_class=='melanoma' %}selected{% endif %}>Melanoma (malignant)</option>
+            <option value="benign" {% if positive_class=='benign' %}selected{% endif %}>Benign</option>
+        </select>
+
+        <label for="threshold">Decision threshold (0-1)</label>
+        <input id="threshold" name="threshold" type="text" value="{{ threshold }}">
+        <div class="info-box">
+            Higher threshold = fewer melanoma diagnoses. Lower threshold = more melanoma diagnoses.
+        </div>
+
+        <input type="hidden" name="action" value="save">
+        <button type="submit">💾 Save Settings</button>
+        <button type="submit" class="secondary" onclick="document.querySelector('input[name=action]').value='calibrate'">🔧 Auto-Calibrate</button>
+    </form>
+
+    <p style="margin-top:20px;color:#666;font-size:13px">
+        <strong>Auto-Calibrate:</strong> Analyzes sample images named with "benign" or "melanoma" in uploads folder to recommend optimal settings.<br>
+        <strong>Current:</strong> positive_class={{ positive_class or 'melanoma (default)' }}, threshold={{ threshold }}
+    </p>
+</div>
+
+</body>
+</html>

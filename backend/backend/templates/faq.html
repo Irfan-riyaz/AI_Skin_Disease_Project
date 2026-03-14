@@ -1,0 +1,53 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>FAQ - AI Skin Disease Detection</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<style>
+		.faq-container { max-width:900px; margin:40px auto; padding:20px }
+		.faq-item { background:white; padding:18px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:12px }
+	</style>
+</head>
+<body>
+<header class="navbar">
+	<div class="logo">SkinCare AI</div>
+	<nav>
+		<a href="{{ url_for('home') }}">Home</a>
+		<a href="{{ url_for('login') }}">Login</a>
+		<a href="{{ url_for('faq') }}">FAQ</a>
+		<a href="{{ url_for('help_page') }}">Help</a>
+		<a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+		<a href="{{ url_for('feedback') }}">Feedback</a>
+	</nav>
+</header>
+
+<div class="faq-container">
+	<h2>Frequently Asked Questions</h2>
+	<div class="faq-item">
+		<strong>Is this a medical diagnosis?</strong>
+		<p>No. This system provides AI-assisted screening and is not a substitute for professional medical advice.</p>
+	</div>
+	<div class="faq-item">
+		<strong>What image quality is required?</strong>
+		<p>Use a clear, focused image of the lesion with good lighting and minimal obstructions.</p>
+	</div>
+	<div class="faq-item">
+		<strong>How accurate is the model?</strong>
+		<p>Accuracy varies by condition and image quality. The app shows a confidence score for each prediction.</p>
+	</div>
+	<div class="faq-item">
+		<strong>Where are my images stored?</strong>
+		<p>Uploaded images are stored temporarily on the server in the application `uploads/` folder for processing.</p>
+	</div>
+</div>
+
+<footer class="footer">
+	<p>© 2026 AI Dermatologist | Healthcare AI Project</p>
+	<a href="{{ url_for('home') }}">Back to Home</a>
+</footer>
+</body>
+</html>
+

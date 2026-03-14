@@ -1,0 +1,49 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Help - AI Skin Disease Detection</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<style>
+		.help-container { max-width:900px; margin:40px auto; padding:20px }
+		.help-step { background:white; padding:18px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:12px }
+	</style>
+</head>
+<body>
+<header class="navbar">
+	<div class="logo">SkinCare AI</div>
+	<nav>
+		<a href="{{ url_for('home') }}">Home</a>
+		<a href="{{ url_for('login') }}">Login</a>
+		<a href="{{ url_for('faq') }}">FAQ</a>
+		<a href="{{ url_for('help_page') }}">Help</a>
+		<a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+		<a href="{{ url_for('feedback') }}">Feedback</a>
+	</nav>
+</header>
+
+<div class="help-container">
+	<h2>Help & Support</h2>
+	<div class="help-step">
+		<h3>How to upload an image</h3>
+		<p>Go to the Upload page, select a clear image, and wait for the upload progress to finish. You will see a confirmation animation when upload completes.</p>
+	</div>
+	<div class="help-step">
+		<h3>Understanding results</h3>
+		<p>The result page shows predicted condition, a confidence score, recommended next steps, and suggested dermatologists.</p>
+	</div>
+	<div class="help-step">
+		<h3>Contact & Feedback</h3>
+		<p>Use the Feedback page to send us comments or report problems. We store feedback in the application database.</p>
+	</div>
+</div>
+
+<footer class="footer">
+	<p>© 2026 AI Dermatologist | Healthcare AI Project</p>
+	<a href="{{ url_for('home') }}">Back to Home</a>
+</footer>
+</body>
+</html>
+

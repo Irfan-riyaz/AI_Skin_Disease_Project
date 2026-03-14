@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 50px;
+    background: #0a3d62;
+    color: white;
+}
+
+.navbar a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* HERO */
+.hero {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-content {
+    max-width: 600px;
+    padding: 40px;
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.hero-content p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.cta-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background: #ff3f34;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* HOW IT WORKS */
+.how-it-works {
+    padding: 60px;
+    background: white;
+    text-align: center;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.step img {
+    width: 55px;
+    margin-bottom: 10px;
+}
+
+/* TIPS */
+.tips {
+    padding: 50px;
+    background: #eaf2f8;
+    text-align: center;
+}
+
+.tips ul {
+    max-width: 600px;
+    margin: auto;
+    line-height: 2;
+}
+
+/* CONDITIONS */
+.conditions {
+    padding: 70px 60px;
+    background: #f9fbfd;
+    text-align: center;
+}
+
+.conditions-subtitle {
+    max-width: 700px;
+    margin: 10px auto 40px;
+    color: #555;
+}
+
+.condition-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.condition-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.condition-card:hover {
+    transform: translateY(-5px);
+}
+
+.condition-card h3 {
+    margin: 15px 0;
+    color: #0a3d62;
+}
+
+.condition-card p {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.condition-card ul {
+    padding-left: 18px;
+    font-size: 14px;
+}
+
+/* BADGES */
+.badge {
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 15px;
+    color: white;
+}
+
+.cancer { background: #e74c3c; }
+.benign { background: #27ae60; }
+.inflammatory { background: #f39c12; }
+
+/* DISCLAIMER */
+.disclaimer {
+    background: #fff3cd;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* FOOTER */
+.footer {
+    padding: 20px;
+    background: #0a3d62;
+    color: white;
+    text-align: center;
+}
+
+.footer a {
+    color: white;
+    display: block;
+    margin-top: 8px;
+}

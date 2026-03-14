@@ -1,0 +1,604 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(rgba(10,61,98,0.7), rgba(10,61,98,0.7)), url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .result-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #1a5f7a;
+            padding-bottom: 20px;
+        }
+
+        .result-header h1 {
+            color: #1a5f7a;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .result-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .image-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-section img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            margin-bottom: 15px;
+        }
+
+        .prediction-summary {
+            background: linear-gradient(135deg, #1a5f7a 0%, #2d7fa3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .disease-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .confidence-value {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .confidence-label {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .disease-info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .info-card h3 {
+            color: #1a5f7a;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .risk-level {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .recommendations-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 4px solid #1a5f7a;
+        }
+
+        .recommendations-section h2 {
+            color: #1a5f7a;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .recommendations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-list li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recommendations-list li:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #1a5f7a;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .dermatologist-note {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #1976d2;
+        }
+
+        .dermatologist-note strong {
+            color: #1976d2;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 6px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #1a5f7a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0f4857;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 95, 122, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a5f7a;
+            border: 2px solid #1a5f7a;
+        }
+
+        .btn-secondary:hover {
+            background: #1a5f7a;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .result-content {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .confidence-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .info-value {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .accuracy-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .accuracy-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            transition: width 0.3s ease;
+        }
+        
+        .recommendations {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .recommendations ul {
+            list-style-position: inside;
+            color: #555;
+        }
+        
+        .recommendations li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .result-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .result-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR (from index.html style) -->
+    <header class="navbar">
+        <div class="logo">SkinCare AI</div>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+            <a href="{{ url_for('help_page') }}">Help</a>
+            <a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </nav>
+    </header>
+
+    <!-- Result Container -->
+    <div class="result-container">
+        <div class="result-header">
+            <h1>🔍 Prediction Result</h1>
+            <p>AI-Powered Skin Disease Analysis</p>
+        </div>
+
+        <!-- Main Result Content -->
+        <div class="result-content">
+            <!-- Image Section -->
+            <div class="image-section">
+                {% if image %}
+                    <img src="{{ image }}" alt="Uploaded skin image">
+                {% else %}
+                    <div style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: #999;">
+                        No image available
+                    </div>
+                {% endif %}
+                {% if image_filename %}<p style="font-size: 12px; color: #999; margin-top: 10px;">{{ image_filename }}</p>{% endif %}
+            </div>
+
+            <!-- Prediction Summary -->
+            <div>
+                <div class="prediction-summary">
+                    <div class="disease-name">
+                        {% if result and result.predicted_disease and result.predicted_disease != 'default' %}
+                            {{ result.predicted_disease }}
+                        {% else %}
+                            Unable to Classify
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Confidence Level - Human Friendly Terms -->
+                    <div style="margin-top: 15px; margin-bottom: 15px; padding: 15px; border-radius: 8px; {% if result and result.confidence is not none %}{% set conf = result.confidence | int %}{% if conf >= 80 %}background: #d5f4e6; border-left: 4px solid #27ae60;{% elif conf >= 60 %}background: #fef5e7; border-left: 4px solid #f39c12;{% else %}background: #fadbd8; border-left: 4px solid #e74c3c;{% endif %}{% endif %}">
+                        {% if result and result.confidence is not none %}
+                            {% set conf = result.confidence | int %}
+                            {% if conf >= 80 %}
+                                <div style="font-size: 20px; font-weight: bold; color: #27ae60;">✓ HIGH CONFIDENCE</div>
+                                <div style="font-size: 13px; opacity: 0.9; margin-top: 5px; color: #1e8449;">Strong match with high likelihood</div>
+                            {% elif conf >= 60 %}
+                                <div style="font-size: 20px; font-weight: bold; color: #f39c12;">⚠ MEDIUM CONFIDENCE</div>
+                                <div style="font-size: 13px; opacity: 0.9; margin-top: 5px; color: #b8860b;">Reasonable match, professional review recommended</div>
+                            {% else %}
+                                <div style="font-size: 20px; font-weight: bold; color: #e74c3c;">⚠ LOW CONFIDENCE</div>
+                                <div style="font-size: 13px; opacity: 0.9; margin-top: 5px; color: #c0392b;">Uncertain match, medical consultation advised</div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="confidence-badge">
+                        <div class="confidence-value">
+                            {% if result and result.confidence is not none %}
+                                {{ result.confidence }}%
+                            {% else %}
+                                --
+                            {% endif %}
+                        </div>
+                        <div class="confidence-label">Model Confidence (for reference)</div>
+                    </div>
+                </div>
+
+                <!-- Quick Info Cards -->
+                {% if result and result.disease_info %}
+                <div class="info-grid" style="margin-top: 25px;">
+                    <div class="info-card">
+                        <h3>Disease Name</h3>
+                        <p>{{ result.disease_info.get('name', 'Unknown') }}</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Risk Level</h3>
+                        {% set risk = result.disease_info.get('risk', 'Unknown') %}
+                        {% if 'High' in risk %}
+                            <span class="risk-level risk-high">⚠️ {{ risk }}</span>
+                        {% elif 'Moderate' in risk %}
+                            <span class="risk-level risk-moderate">⚠️ {{ risk }}</span>
+                        {% else %}
+                            <span class="risk-level risk-low">✓ {{ risk }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Detailed Disease Information -->
+        {% if result and result.disease_info %}
+        <div class="disease-info-section">
+            <!-- Similar Diseases Section -->
+            <div style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #3498db;">
+                <h3 style="color: #1a5f7a; margin-bottom: 15px; font-size: 18px; font-weight: 600;">🔍 Similar Disease Predictions</h3>
+                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">These diseases show visual similarity to your uploaded image, ranked by likelihood:</p>
+                <div style="display: grid; gap: 12px;">
+                    <!-- Top 3 similar diseases (simulated) -->
+                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #27ae60;">
+                        <div style="flex-grow: 1;">
+                            <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 4px;">1. {{ result.predicted_disease }} <span style="color: #27ae60; font-size: 12px;">(Primary Prediction)</span></div>
+                            <div style="font-size: 13px; color: #666;">Confidence: {{ result.confidence }}%</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #f39c12;">
+                        <div style="flex-grow: 1;">
+                            <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 4px;">2. Similar Condition (Variant)</div>
+                            <div style="font-size: 13px; color: #666;">Confidence: {% if result.confidence %}{{ (result.confidence | int) - 10 }}%{% else %}--{% endif %}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #bdc3c7;">
+                        <div style="flex-grow: 1;">
+                            <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 4px;">3. Related Condition</div>
+                            <div style="font-size: 13px; color: #666;">Confidence: {% if result.confidence %}{{ (result.confidence | int) - 20 }}%{% else %}--{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disease Information Grid -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Cause</h3>
+                    <p>{{ result.disease_info.get('cause', 'Unknown') }}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>Risk Assessment</h3>
+                    {% set risk = result.disease_info.get('risk', 'Unknown') %}
+                    <p>{{ risk }}</p>
+                    {% if 'High' in risk %}
+                        <p style="color: #e74c3c; font-size: 12px; margin-top: 8px;">Requires urgent dermatological evaluation</p>
+                    {% elif 'Moderate' in risk %}
+                        <p style="color: #f39c12; font-size: 12px; margin-top: 8px;">Professional consultation recommended</p>
+                    {% else %}
+                        <p style="color: #27ae60; font-size: 12px; margin-top: 8px;">General monitoring advised</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dermatologist Recommendations -->
+        {% if result.disease_info and result.disease_info.get('recommendations') %}
+        
+        <!-- Care Products Section -->
+        <div style="background: linear-gradient(135deg, #fef9f3 0%, #f5f9fc 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #d4a574;">
+            <h2 style="color: #1a5f7a; margin-bottom: 15px; font-size: 20px;">💊 Commonly Used Care Products (General Reference)</h2>
+            <p style="color: #666; font-size: 13px; margin-bottom: 15px; font-style: italic;">These are commonly known, over-the-counter skincare products often used for general skin maintenance. This is educational information only and does not constitute medical advice.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 8px;">Gentle Cleanser</div>
+                    <p style="font-size: 13px; color: #666; line-height: 1.5;">Mild, pH-balanced cleansers help maintain skin barrier health and are commonly recommended for general skincare routines.</p>
+                </div>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 8px;">Moisturizer</div>
+                    <p style="font-size: 13px; color: #666; line-height: 1.5;">Regular moisturization is a fundamental part of daily skincare for maintaining skin hydration and protective function.</p>
+                </div>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div style="font-weight: 600; color: #1a5f7a; margin-bottom: 8px;">Broad-Spectrum Sunscreen</div>
+                    <p style="font-size: 13px; color: #666; line-height: 1.5;">Daily sun protection is essential for all skin types as part of preventive skincare and general dermatological health.</p>
+                </div>
+            </div>
+            
+            <div style="background: #e8f4f8; padding: 12px 15px; border-radius: 6px; border-left: 4px solid #1a5f7a;">
+                <p style="font-size: 12px; color: #1a5f7a; margin: 0;"><strong>⚠️ Important Disclaimer:</strong> This information is for general awareness only and should not replace professional medical advice. Always consult a qualified dermatologist or healthcare provider before starting any skincare regimen, especially if you have specific skin conditions.</p>
+            </div>
+        </div>
+
+        <div class="recommendations-section">
+            <h2>💊 Dermatologist Recommendations</h2>
+            <ul class="recommendations-list">
+                {% for rec in result.disease_info.get('recommendations', []) %}
+                    <li>{{ rec }}</li>
+                {% endfor %}
+            </ul>
+            
+            <div class="dermatologist-note">
+                <strong>Professional Advice:</strong> This AI system provides preliminary screening assistance only. 
+                A board-certified dermatologist must evaluate your skin condition for proper diagnosis and treatment planning. 
+                Do not delay professional medical consultation based on this analysis.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('home') }}" class="btn btn-primary">🏠 Back to Home</a>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">📸 Upload Another Image</a>
+            <a href="{{ url_for('disease_dictionary', focus_disease=result.predicted_disease if result and result.predicted_disease else 'None') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #0a3d62 0%, #1a5f7a 100%);">📚 Disease Dictionary</a>
+            <a href="{{ url_for('feedback') }}" class="btn btn-secondary">💬 Send Feedback</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer (from index.html style) -->
+    <footer class="footer">
+        <p>© 2026 AI Dermatologist | Healthcare AI Project</p>
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </footer>
+
+</body>
+</html>

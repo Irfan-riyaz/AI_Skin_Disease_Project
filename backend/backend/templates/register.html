@@ -1,0 +1,399 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - AI Skin Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(rgba(10,61,98,0.7), rgba(10,61,98,0.7)), url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .register-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .register-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* Medical Info Section */
+        .register-visual {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .medical-info {
+            color: white;
+        }
+
+        .medical-info h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .medical-info p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+            opacity: 0.95;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            font-size: 15px;
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+            color: white;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Register Form Section */
+        .register-box {
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .register-header {
+            margin-bottom: 35px;
+        }
+
+        .register-header h2 {
+            font-size: 28px;
+            color: #0a3d62;
+            margin-bottom: 8px;
+        }
+
+        .register-header p {
+            color: #888;
+            font-size: 13px;
+        }
+
+        /* Account Type Selection */
+        .account-type-selector {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f0f5f9;
+            border-radius: 10px;
+            border-left: 4px solid #0a3d62;
+        }
+
+        .type-label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #0a3d62;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .type-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 8px;
+        }
+
+        .type-option input[type="radio"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #0a3d62;
+        }
+
+        .type-option label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            margin: 0;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0a3d62;
+            background: white;
+            box-shadow: 0 0 8px rgba(10,61,98,0.15);
+        }
+
+        .register-box button {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #0a3d62 0%, #1e5a8e 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(10,61,98,0.2);
+        }
+
+        .register-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(10,61,98,0.3);
+        }
+
+        .register-box button:active {
+            transform: translateY(0);
+        }
+
+        .register-box .error-msg {
+            color: #c0392b;
+            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            border-radius: 5px;
+        }
+
+        .register-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .register-footer a {
+            color: #0a3d62;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-footer a:hover {
+            color: #1e5a8e;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1000px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .register-visual {
+                order: 2;
+                margin-top: 20px;
+            }
+
+            .register-box {
+                order: 1;
+                max-width: 100%;
+            }
+
+            .medical-info h1 {
+                font-size: 32px;
+            }
+
+            .medical-info p {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .register-container {
+                background-attachment: scroll;
+            }
+
+            .register-content {
+                padding: 20px 15px;
+            }
+
+            .register-box {
+                padding: 30px 20px;
+                max-width: 100%;
+            }
+
+            .register-header h2 {
+                font-size: 24px;
+            }
+
+            .type-options {
+                grid-template-columns: 1fr;
+            }
+
+            .medical-info h1 {
+                font-size: 28px;
+            }
+
+            .medical-info p {
+                font-size: 13px;
+            }
+
+            .feature-list li {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">SkinCare AI</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+        <a href="{{ url_for('feedback') }}">Feedback</a>
+    </nav>
+</header>
+
+<div class="register-container">
+    <div class="register-content">
+        <div class="register-wrapper">
+
+            <!-- Medical Info Section -->
+            <div class="register-visual">
+                <div class="medical-info">
+                    <h1>Join Our Health Network</h1>
+                    <p>Create your account and start your skin health screening journey today. Get instant AI-powered analysis with professional medical insights.</p>
+                    
+                    <ul class="feature-list">
+                        <li>24/7 skin disease screening access</li>
+                        <li>Personalized health insights</li>
+                        <li>Medical history tracking</li>
+                        <li>Expert recommendations</li>
+                        <li>Secure data encryption</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Register Form Section -->
+            <div class="register-box">
+                <div class="register-header">
+                    <h2>Create Account</h2>
+                    <p>Join thousands of users screening for better skin health</p>
+                </div>
+
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="error-msg">{{ messages[0] }}</div>
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('register') }}">
+                    
+                    <!-- Account Type Selection -->
+                    <div class="account-type-selector">
+                        <span class="type-label">Account Type</span>
+                        <div class="type-options">
+                            <div class="type-option">
+                                <input type="radio" id="user_account" name="account_type" value="user" checked>
+                                <label for="user_account">User Account</label>
+                            </div>
+                            <div class="type-option">
+                                <input type="radio" id="admin_account" name="account_type" value="admin">
+                                <label for="admin_account">Admin Account</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <input type="text" name="username" placeholder="Username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="phone" placeholder="Phone Number (Optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Email Address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password" placeholder="Password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="confirm" placeholder="Confirm Password" required>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit">Create Account</button>
+                </form>
+
+                <div class="register-footer">
+                    Already have an account? <a href="{{ url_for('login') }}">Back to Login</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

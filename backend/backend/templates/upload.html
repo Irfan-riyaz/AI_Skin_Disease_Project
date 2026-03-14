@@ -1,0 +1,283 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image - AI Skin Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root{--navy:#0a3d62;--secondary:#1a5f7a;--accent:#ff3f34;--muted:#666}
+        html,body{height:100%;margin:0}
+        body{font-family: Arial, Helvetica, sans-serif;color:#222}
+
+        /* Requested medical background (same as login/result) */
+        .upload-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(rgba(10,61,98,0.7), rgba(10,61,98,0.7)), url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(10,61,98,0.95);color:#fff;position:fixed;top:0;left:0;right:0;z-index:50}
+        .navbar .logo{font-weight:700;font-size:20px;color:#fff}
+        .navbar nav a{color:#fff;margin-left:18px;text-decoration:none;font-weight:600;transition:color 0.3s ease}
+        .navbar nav a:hover{color:#4ecdc4}
+
+        .upload-container-inner{min-height:calc(100vh - 80px);display:flex;align-items:center;justify-content:center;padding:80px 20px 60px}
+        .upload-content{display:flex;gap:40px;align-items:center;justify-content:center;max-width:1100px;width:100%;margin:0 auto;z-index:10}
+
+        /* Guidance Panels */
+        .guidance-panel{display:flex;flex-direction:column;gap:20px;flex:0 1 220px}
+        .guidance-card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 10px 30px rgba(10,61,98,0.06);border-left:6px solid var(--navy)}
+        .guidance-card h4{font-size:13px;color:var(--navy);margin:0 0 6px;font-weight:700;text-transform:uppercase}
+        .guidance-card p{font-size:12px;color:var(--muted);margin:0}
+        .guidance-icon{display:block;font-size:28px;margin-bottom:10px;opacity:0.85}
+
+        /* Center Upload Card */
+        .upload-box{background:#fff;padding:48px;border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,0.12);width:480px;text-align:center}
+        .upload-box h2{color:var(--navy);font-size:28px;margin:0 0 8px}
+        .upload-box p{color:var(--muted);font-size:14px;margin:0 0 20px}
+
+        .file-input-wrapper{position:relative;display:inline-block;width:100%}
+        .file-input-wrapper input[type=file]{width:100%;padding:12px 16px;border:2px dashed var(--navy);border-radius:8px;cursor:pointer;background:#fbfdff}
+
+        .upload-box button{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;margin-top:18px}
+        .upload-note{font-size:12px;color:#999;margin-top:12px}
+
+        /* Image quality panel + preview */
+        .image-quality-panel{display:none;margin-top:16px;padding:14px;background:#f5f9fc;border-radius:8px;border:1px solid #dfeff7}
+        .image-quality-panel.show{display:block}
+        .quality-check-title{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;margin-bottom:8px}
+        .quality-check-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+        .quality-indicator{width:14px;height:14px;border-radius:50%;flex-shrink:0;background:#bdc3c7}
+        .quality-indicator.good{background:#27ae60}
+        .quality-indicator.warning{background:#f39c12}
+        .quality-indicator.critical{background:#e74c3c}
+
+        .image-preview{display:none;margin-top:14px;border-radius:8px;overflow:hidden;background:#f7fbfd}
+        .image-preview.show{display:block}
+        .image-preview img{width:100%;height:auto;max-height:260px;object-fit:contain}
+
+        /* Upload status */
+        #uploadStatus{display:none;margin-top:14px}
+        #progressBar{width:100%;height:12px;background:#e9ecef;border-radius:8px;overflow:hidden}
+        #progressFill{height:100%;width:0%;background:linear-gradient(90deg,#4caf50,#66bb6a)}
+
+        /* Responsive */
+        @media (max-width:1024px){.upload-content{flex-direction:column;padding:20px}.guidance-panel{flex-direction:row;gap:12px;justify-content:center}.guidance-card{flex:1}} 
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">SkinCare AI</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+        <a href="{{ url_for('feedback') }}">Feedback</a>
+    </nav>
+</header>
+
+<div class="upload-container">
+    <div class="upload-container-inner">
+        <div class="upload-content">
+            <!-- LEFT GUIDANCE -->
+            <div class="guidance-panel left">
+                <div class="guidance-card">
+                    <span class="guidance-icon">💡</span>
+                    <h4>Natural Lighting</h4>
+                    <p>Use natural daylight or well-lit environments for best results</p>
+                </div>
+                <div class="guidance-card">
+                    <span class="guidance-icon">📸</span>
+                    <h4>Clear Focus</h4>
+                    <p>Ensure the affected area is sharp and clearly visible</p>
+                </div>
+            </div>
+
+            <!-- CENTER UPLOAD BOX -->
+            <div class="upload-box">
+                <h2>Upload Skin Image</h2>
+                <p>Upload a clear image of the affected skin area for AI analysis</p>
+
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="success-msg" style="background:#d5f4e6;padding:12px;border-radius:6px;margin-bottom:12px;color:#155724">{{ messages[0] }}</div>
+                  {% endif %}
+                {% endwith %}
+
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="file-input-wrapper">
+                        <input id="imageInput" type="file" name="image" accept="image/png,image/jpeg,image/jpg" required>
+                    </div>
+
+                    <!-- Image Quality Check Indicator -->
+                    <div id="imageQualityPanel" class="image-quality-panel">
+                        <div class="quality-check-title">Image Quality Check</div>
+                        <div class="quality-check-item">
+                            <span class="quality-indicator" id="resolutionIndicator"></span>
+                            <span class="quality-text" id="resolutionText">Analyzing resolution...</span>
+                        </div>
+                        <div class="quality-check-item">
+                            <span class="quality-indicator" id="brightnessIndicator"></span>
+                            <span class="quality-text" id="brightnessText">Analyzing brightness...</span>
+                        </div>
+                        <div class="quality-check-item">
+                            <span class="quality-indicator" id="contrastIndicator"></span>
+                            <span class="quality-text" id="contrastText">Analyzing contrast...</span>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="imagePreview" class="image-preview">
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+
+                    <button id="uploadBtn" type="submit">Upload & Process</button>
+                </form>
+
+                <div id="uploadStatus" style="display:none; margin-top:14px;">
+                    <div id="progressBar" style="width:100%; height:12px; background:#e9ecef; border-radius:8px; overflow:hidden;">
+                        <div id="progressFill" style="height:100%; width:0%; background:linear-gradient(90deg,#4caf50,#66bb6a);"></div>
+                    </div>
+                    <div id="successCheck" style="display:none; margin-top:16px; text-align:center;">
+                        <svg id="checkCircle" width="64" height="64" viewBox="0 0 52 52" style="display:block;margin:0 auto">
+                            <circle cx="26" cy="26" r="25" fill="none" stroke="#4caf50" stroke-width="2" stroke-dasharray="157" stroke-dashoffset="157" />
+                            <path fill="none" stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27 l8 8 16-18" stroke-dasharray="40" stroke-dashoffset="40"/>
+                        </svg>
+                        <div id="successText" style="margin-top:10px; color:#2e7d32; font-weight:700;">Image uploaded successfully</div>
+                    </div>
+                </div>
+
+                <div class="upload-note">Supported formats: PNG, JPG, JPEG (Max 5MB)</div>
+            </div>
+
+            <!-- RIGHT GUIDANCE -->
+            <div class="guidance-panel right">
+                <div class="guidance-card">
+                    <span class="guidance-icon">📐</span>
+                    <h4>Capture Area</h4>
+                    <p>Include the full affected area in the frame clearly</p>
+                </div>
+                <div class="guidance-card">
+                    <span class="guidance-icon">✓</span>
+                    <h4>No Obstructions</h4>
+                    <p>Avoid shadows, hands, or other objects blocking the view</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== IMAGE QUALITY CHECK FUNCTIONS (non-blocking, visual-only) ==========
+function analyzeImageQuality(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const img = new Image();
+        img.onload = function(){
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width; canvas.height = img.height;
+            const ctx = canvas.getContext('2d'); ctx.drawImage(img,0,0);
+            const imageData = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+            const resolutionQuality = analyzeResolution(img.width, img.height);
+            const brightnessQuality = analyzeBrightness(imageData);
+            const contrastQuality = analyzeContrast(imageData);
+            callback({resolution:resolutionQuality, brightness:brightnessQuality, contrast:contrastQuality});
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function analyzeResolution(width,height){
+    const minD = Math.min(width,height);
+    if(minD>=1000) return {status:'good', text:'Resolution: Good ('+width+'x'+height+')'};
+    if(minD>=500) return {status:'warning', text:'Resolution: Acceptable ('+width+'x'+height+')'};
+    return {status:'critical', text:'Resolution: Low ('+width+'x'+height+')'};
+}
+
+function analyzeBrightness(data){
+    let total=0; for(let i=0;i<data.length;i+=4){ total += (0.299*data[i]+0.587*data[i+1]+0.114*data[i+2]); }
+    const avg = total/(data.length/4);
+    if(avg>=60 && avg<=200) return {status:'good', text:'Lighting: Good'};
+    if((avg>=40 && avg<60) || (avg>200 && avg<=220)) return {status:'warning', text:'Lighting: Dim or bright'};
+    return {status:'critical', text:'Lighting: Very poor'};
+}
+
+function analyzeContrast(data){
+    let total=0; for(let i=0;i<data.length;i+=4){ total += (0.299*data[i]+0.587*data[i+1]+0.114*data[i+2]); }
+    const avg = total/(data.length/4);
+    let variance=0; for(let i=0;i<data.length;i+=4){ const b=(0.299*data[i]+0.587*data[i+1]+0.114*data[i+2]); variance += Math.pow(b-avg,2); }
+    const stdDev = Math.sqrt(variance/(data.length/4));
+    if(stdDev>=30) return {status:'good', text:'Contrast: Good'};
+    if(stdDev>=15) return {status:'warning', text:'Contrast: Moderate'};
+    return {status:'critical', text:'Contrast: Low'};
+}
+
+function updateQualityUI(quality){
+    const ri = document.getElementById('resolutionIndicator');
+    const rt = document.getElementById('resolutionText');
+    const bi = document.getElementById('brightnessIndicator');
+    const bt = document.getElementById('brightnessText');
+    const ci = document.getElementById('contrastIndicator');
+    const ct = document.getElementById('contrastText');
+    ri.className = 'quality-indicator ' + (quality.resolution.status || 'unknown');
+    rt.textContent = quality.resolution.text || '';
+    bi.className = 'quality-indicator ' + (quality.brightness.status || 'unknown');
+    bt.textContent = quality.brightness.text || '';
+    ci.className = 'quality-indicator ' + (quality.contrast.status || 'unknown');
+    ct.textContent = quality.contrast.text || '';
+}
+
+// ========== ORIGINAL UPLOAD WORKFLOW (preserved) ==========
+const form = document.getElementById('uploadForm');
+const input = document.getElementById('imageInput');
+const status = document.getElementById('uploadStatus');
+const progressFill = document.getElementById('progressFill');
+const successCheck = document.getElementById('successCheck');
+const checkCircle = document.querySelector('#checkCircle circle');
+const checkPath = document.querySelector('#checkCircle path');
+const qualityPanel = document.getElementById('imageQualityPanel');
+const previewDiv = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+function animateCheck(){
+    try{ checkCircle.style.transition='stroke-dashoffset 0.8s ease-out'; checkPath.style.transition='stroke-dashoffset 0.4s 0.6s ease-out'; checkCircle.style.strokeDashoffset='0'; checkPath.style.strokeDashoffset='0'; }catch(e){}
+}
+
+input.addEventListener('change', function(){
+    const file = this.files[0];
+    if(!file){ qualityPanel.classList.remove('show'); previewDiv.classList.remove('show'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e){ previewImg.src = e.target.result; previewDiv.classList.add('show'); };
+    reader.readAsDataURL(file);
+    // show quality checks inline (non-blocking)
+    qualityPanel.classList.add('show');
+    analyzeImageQuality(file, updateQualityUI);
+});
+
+form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const file = input.files[0];
+    if(!file) return alert('Select an image first');
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData(); fd.append('image', file);
+    xhr.open('POST','/api/upload', true);
+    xhr.upload.onprogress = function(ev){ status.style.display='block'; const pct = ev.lengthComputable ? Math.round(ev.loaded/ev.total*100) : 0; progressFill.style.width = pct + '%'; }
+    xhr.onload = function(){ if(xhr.status===200){ const resp = JSON.parse(xhr.responseText); if(resp.success){ progressFill.style.width='100%'; successCheck.style.display='block'; animateCheck(); setTimeout(()=>{ window.location.href = '/result' }, 900); } else { alert('Upload failed: '+(resp.error||'unknown')); } } else { alert('Upload failed with status '+xhr.status); } };
+    xhr.onerror = function(){ alert('Upload failed (network)') };
+    xhr.send(fd);
+});
+</script>
+
+</body>
+</html>

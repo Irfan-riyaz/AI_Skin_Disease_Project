@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Dictionary - AI Skin Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Dermatology-themed background */
+        body {
+            background: linear-gradient(135deg, #b3dfe0 0%, #c5e8eb 25%, #d4f1f5 50%, #c5e8eb 75%, #b3dfe0 100%);
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        .dictionary-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            margin-top: 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Left Sidebar - Category Navigation */
+        .category-panel {
+            background: white;
+            border-right: 3px solid #0a3d62;
+            padding: 25px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .category-header {
+            padding: 0 20px 15px;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 15px;
+        }
+
+        .category-header h2 {
+            color: #0a3d62;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-item:hover {
+            background: #f5f9fc;
+            color: #0a3d62;
+            border-left-color: #ff3f34;
+        }
+
+        .category-item.active {
+            background: #e8f4f8;
+            color: #0a3d62;
+            border-left-color: #0a3d62;
+            font-weight: 600;
+        }
+
+        /* Right Content Area */
+        .dictionary-content {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            overflow-y: auto;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #0a3d62;
+            padding-bottom: 15px;
+        }
+
+        .content-header h1 {
+            color: #0a3d62;
+            font-size: 28px;
+            margin: 0 0 5px 0;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Disease List */
+        .disease-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .disease-item {
+            background: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 4px solid #d0e8f2;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #1a5f7a;
+        }
+
+        .disease-item:hover {
+            background: #f5f9fc;
+            border-left-color: #0a3d62;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .disease-item.selected {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4ebf3 100%);
+            border-left-color: #0a3d62;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.15);
+        }
+
+        /* Disease Detail Panel */
+        .disease-detail {
+            background: linear-gradient(135deg, #fef9f3 0%, #f5f9fc 100%);
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #0a3d62;
+            display: none;
+        }
+
+        .disease-detail.active {
+            display: block;
+        }
+
+        .disease-detail h2 {
+            color: #0a3d62;
+            font-size: 24px;
+            margin: 0 0 15px 0;
+        }
+
+        .detail-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .detail-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .detail-section h3 {
+            color: #0a3d62;
+            font-size: 16px;
+            margin: 0 0 12px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8f4f8;
+        }
+
+        .detail-section p, .detail-section ul {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .detail-section ul {
+            padding-left: 20px;
+        }
+
+        .detail-section li {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #e8f4f8;
+            color: #0a3d62;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .consultation-alert {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .consultation-alert strong {
+            color: #1976d2;
+        }
+
+        .consultation-alert p {
+            color: #1565c0;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            color: #1a5f7a;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dictionary-container {
+                grid-template-columns: 1fr;
+            }
+
+            .category-panel {
+                border-right: none;
+                border-bottom: 3px solid #0a3d62;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                padding: 15px;
+            }
+
+            .category-item {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding: 10px;
+                text-align: center;
+            }
+
+            .category-item.active {
+                border-left: none;
+                border-bottom: 3px solid #0a3d62;
+            }
+
+            .category-item:hover {
+                border-left: none;
+                border-bottom-color: #ff3f34;
+            }
+
+            .disease-list {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dictionary-content {
+                padding: 15px;
+            }
+
+            .content-header h1 {
+                font-size: 22px;
+            }
+
+            .detail-section {
+                padding: 15px;
+            }
+
+            .disease-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0a3d62;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #1a5f7a;
+            box-shadow: 0 2px 8px rgba(10, 61, 98, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">SkinCare AI</div>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+            <a href="{{ url_for('help_page') }}">Help</a>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </nav>
+    </header>
+
+    <!-- Main Dictionary Container -->
+    <div class="dictionary-container">
+        <!-- Left: Category Navigation Panel -->
+        <div class="category-panel">
+            <div class="category-header">
+                <h2>📚 Categories</h2>
+            </div>
+            <ul class="category-list">
+                <li class="category-item active" data-category="inflammatory">
+                    🔴 Inflammatory
+                </li>
+                <li class="category-item" data-category="infectious">
+                    🦠 Infectious
+                </li>
+                <li class="category-item" data-category="autoimmune">
+                    ⚡ Autoimmune
+                </li>
+                <li class="category-item" data-category="tumors">
+                    🔍 Tumors & Growths
+                </li>
+                <li class="category-item" data-category="pigmentation">
+                    🎨 Pigmentation
+                </li>
+                <li class="category-item" data-category="vascular">
+                    🩸 Vascular
+                </li>
+                <li class="category-item" data-category="normal">
+                    ✓ Normal & Other
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right: Content Area -->
+        <div class="dictionary-content">
+            <a href="{{ url_for('home') }}" class="back-button">← Back</a>
+
+            <!-- Disease List Container -->
+            <div id="diseaseListContainer">
+                <div class="content-header">
+                    <h1 id="categoryTitle">Inflammatory Skin Conditions</h1>
+                    <p id="categoryDesc">Common inflammatory skin diseases and conditions</p>
+                </div>
+                
+                <div class="disease-list" id="diseaseList">
+                    <!-- Diseases will be populated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Disease Detail Container -->
+            <div id="diseaseDetailContainer">
+                <!-- Details will be populated here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 AI Dermatologist | Healthcare AI Project</p>
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </footer>
+
+    <script>
+        // Disease Dictionary Database
+        const diseaseDatabase = {
+            inflammatory: {
+                title: "Inflammatory Skin Conditions",
+                description: "Common inflammatory skin diseases and conditions",
+                diseases: [
+                    {
+                        name: "Acne Vulgaris",
+                        description: "Chronic inflammatory condition of hair follicles and sebaceous glands characterized by comedones, papules, pustules, and possible scarring.",
+                        symptoms: [
+                            "Comedones (blackheads and whiteheads)",
+                            "Papules and pustules",
+                            "Nodules in severe cases",
+                            "Oily skin",
+                            "Scarring if severe"
+                        ],
+                        causes: [
+                            "Increased sebum production",
+                            "Bacterial colonization (Cutibacterium acnes)",
+                            "Follicular hyperkeratinization",
+                            "Inflammation",
+                            "Hormonal factors, especially during puberty"
+                        ],
+                        care: [
+                            "Regular gentle cleansing with mild cleansers",
+                            "Avoid excessive scrubbing or irritation",
+                            "Use non-comedogenic skincare products",
+                            "Maintain skin hydration",
+                            "Protect from sun exposure"
+                        ],
+                        consultation: "See a dermatologist if acne is severe, widespread, or causes psychological distress. Professional treatments may include topical retinoids, antibiotics, or systemic medications."
+                    },
+                    {
+                        name: "Atopic Dermatitis (Eczema)",
+                        description: "Chronic inflammatory skin condition characterized by intense itching, dry skin, and recurrent infections.",
+                        symptoms: [
+                            "Intense itching (worse at night)",
+                            "Dry, sensitive skin",
+                            "Red, inflamed patches",
+                            "Small raised bumps",
+                            "Cracked or swollen skin",
+                            "Raw, swollen skin from scratching"
+                        ],
+                        causes: [
+                            "Genetic predisposition",
+                            "Impaired skin barrier function",
+                            "Immune system dysfunction",
+                            "Environmental triggers",
+                            "Stress and emotional factors"
+                        ],
+                        care: [
+                            "Moisturize regularly with thick creams or ointments",
+                            "Use mild, fragrance-free cleansers",
+                            "Avoid hot water and excessive bathing",
+                            "Identify and avoid personal triggers",
+                            "Use humidifier in dry environments"
+                        ],
+                        consultation: "Consult a dermatologist for proper diagnosis and management. Treatment may include topical steroids, immunosuppressants, or biologic medications."
+                    },
+                    {
+                        name: "Psoriasis",
+                        description: "Chronic autoimmune inflammatory condition characterized by scaling, thickened plaques of skin.",
+                        symptoms: [
+                            "Red, raised, thickened patches",
+                            "Silvery-white scales",
+                            "Itching and pain",
+                            "Nail pitting and discoloration",
+                            "Joint pain (in psoriatic arthritis)",
+                            "Emotional distress"
+                        ],
+                        causes: [
+                            "Genetic predisposition",
+                            "Immune system abnormality",
+                            "Stress triggers",
+                            "Infections (strep throat)",
+                            "Certain medications"
+                        ],
+                        care: [
+                            "Keep skin moisturized",
+                            "Avoid skin trauma or irritation",
+                            "Manage stress through relaxation techniques",
+                            "Get adequate sunlight exposure",
+                            "Maintain healthy lifestyle habits"
+                        ],
+                        consultation: "Seek dermatological care for diagnosis and management. Multiple treatment options are available including topical therapies, phototherapy, and systemic medications."
+                    },
+                    {
+                        name: "Rosacea",
+                        description: "Chronic inflammatory condition primarily affecting the face, causing redness and visible blood vessels.",
+                        symptoms: [
+                            "Facial flushing and persistent redness",
+                            "Visible blood vessels",
+                            "Papules and pustules",
+                            "Burning or stinging sensation",
+                            "Dry skin",
+                            "Thickened skin (in advanced cases)"
+                        ],
+                        causes: [
+                            "Vascular dysfunction",
+                            "Immune system abnormality",
+                            "Genetic predisposition",
+                            "Environmental triggers (heat, spicy food, alcohol)",
+                            "Stress and emotional factors"
+                        ],
+                        care: [
+                            "Avoid known triggers (heat, spicy foods, alcohol)",
+                            "Use gentle, fragrance-free skincare",
+                            "Protect skin from sun damage",
+                            "Use mineral sunscreen",
+                            "Manage stress levels"
+                        ],
+                        consultation: "Consult a dermatologist for proper diagnosis. Treatment options may include topical antibiotics, topical retinoids, laser therapy, or oral medications."
+                    }
+                ]
+            },
+            infectious: {
+                title: "Infectious Skin Conditions",
+                description: "Skin infections caused by bacteria, viruses, fungi, or parasites",
+                diseases: [
+                    {
+                        name: "Candidiasis (Yeast Infection)",
+                        description: "Fungal infection caused by Candida albicans, commonly affecting warm, moist areas of skin.",
+                        symptoms: [
+                            "Red, inflamed patches",
+                            "Itching or burning sensation",
+                            "White, cottage cheese-like discharge",
+                            "Maceration (skin softening)",
+                            "Satellite lesions around main infection"
+                        ],
+                        causes: [
+                            "Candida albicans fungus overgrowth",
+                            "Warm and moist environment",
+                            "Weakened immune system",
+                            "Antibiotic use (disrupts normal flora)",
+                            "Poor hygiene or skin care"
+                        ],
+                        care: [
+                            "Keep affected areas clean and dry",
+                            "Wear breathable, moisture-wicking clothing",
+                            "Avoid tight-fitting clothes",
+                            "Use antifungal powder in prone areas",
+                            "Maintain proper hygiene practices"
+                        ],
+                        consultation: "Seek medical evaluation for persistent infections. Antifungal medications (topical or oral) may be necessary for effective treatment."
+                    },
+                    {
+                        name: "Dermatophytosis (Fungal Infection)",
+                        description: "Fungal skin infection caused by dermatophytes (tinea), affecting skin, hair, and nails.",
+                        symptoms: [
+                            "Ring-shaped rash with clear center",
+                            "Itching and burning",
+                            "Flaking or scaling",
+                            "Nail discoloration and thickening",
+                            "Hair loss in affected areas"
+                        ],
+                        causes: [
+                            "Dermatophyte fungi (tinea pedis, tinea corporis, etc.)",
+                            "Direct contact with infected person or animal",
+                            "Contaminated fomites or surfaces",
+                            "Warm, moist environment",
+                            "Compromised immune system"
+                        ],
+                        care: [
+                            "Keep affected areas clean and dry",
+                            "Use antifungal creams or powders",
+                            "Avoid scratching to prevent spread",
+                            "Wash clothing and bedding frequently",
+                            "Wear breathable footwear"
+                        ],
+                        consultation: "Consult a dermatologist for diagnosis and treatment. Antifungal medications may be needed, and some infections require oral therapy."
+                    },
+                    {
+                        name: "Bacterial Infection",
+                        description: "Skin infections caused by bacterial organisms, ranging from mild to severe.",
+                        symptoms: [
+                            "Pustules or boils",
+                            "Redness and swelling",
+                            "Warmth in affected area",
+                            "Pus drainage",
+                            "Fever (in systemic infections)"
+                        ],
+                        causes: [
+                            "Staphylococcus aureus or Streptococcus pyogenes",
+                            "Broken skin barrier",
+                            "Poor wound care",
+                            "Weakened immune system",
+                            "Contaminated surfaces or objects"
+                        ],
+                        care: [
+                            "Keep wound clean and dry",
+                            "Use topical antibiotics if recommended",
+                            "Cover open wounds with clean dressings",
+                            "Avoid squeezing or picking at lesions",
+                            "Seek medical attention for spreading infections"
+                        ],
+                        consultation: "See a healthcare provider if infection shows signs of spreading, has discharge, or is accompanied by fever. Antibiotics may be prescribed."
+                    }
+                ]
+            },
+            autoimmune: {
+                title: "Autoimmune Skin Conditions",
+                description: "Skin conditions resulting from immune system dysfunction against body's own cells",
+                diseases: [
+                    {
+                        name: "Systemic Lupus Erythematosus (SLE)",
+                        description: "Autoimmune disease affecting skin, joints, and internal organs with characteristic skin manifestations.",
+                        symptoms: [
+                            "Butterfly-shaped rash across cheeks and nose",
+                            "Photosensitivity (sun sensitivity)",
+                            "Oral ulcers",
+                            "Joint pain and swelling",
+                            "Hair loss",
+                            "Raynaud's phenomenon"
+                        ],
+                        causes: [
+                            "Autoimmune dysfunction",
+                            "Genetic predisposition",
+                            "Environmental triggers",
+                            "Hormonal factors (more common in women)",
+                            "Immune dysregulation"
+                        ],
+                        care: [
+                            "Avoid UV exposure using high SPF sunscreen",
+                            "Use protective clothing and hats",
+                            "Manage stress through relaxation techniques",
+                            "Maintain anti-inflammatory diet",
+                            "Regular medical monitoring"
+                        ],
+                        consultation: "This is a serious systemic condition requiring ongoing medical management by a rheumatologist and dermatologist. Professional treatment is essential."
+                    },
+                    {
+                        name: "Vitiligo",
+                        description: "Autoimmune condition causing loss of skin pigment in patches due to destruction of melanocytes.",
+                        symptoms: [
+                            "Depigmented patches (white spots)",
+                            "Loss of pigment in hair over affected areas",
+                            "Loss of color in mucous membranes",
+                            "Often symmetrical distribution",
+                            "Repigmentation in some cases"
+                        ],
+                        causes: [
+                            "Autoimmune destruction of melanocytes",
+                            "Genetic predisposition",
+                            "Environmental triggers",
+                            "Oxidative stress",
+                            "Neurogenic factors"
+                        ],
+                        care: [
+                            "Use high SPF sunscreen on affected areas",
+                            "Avoid trauma to skin",
+                            "Use makeup for camouflage if desired",
+                            "Manage stress and emotional impact",
+                            "Seek professional counseling if needed"
+                        ],
+                        consultation: "Consult a dermatologist for diagnosis and treatment options including topical corticosteroids, phototherapy, or depigmentation therapy."
+                    }
+                ]
+            },
+            tumors: {
+                title: "Tumors & Growths",
+                description: "Benign and malignant skin tumors and growths",
+                diseases: [
+                    {
+                        name: "Melanoma",
+                        description: "Malignant tumor arising from melanocytes, the most serious form of skin cancer.",
+                        symptoms: [
+                            "Asymmetrical mole",
+                            "Irregular border",
+                            "Multiple colors within one mole",
+                            "Diameter larger than pencil eraser",
+                            "Bleeding or itching",
+                            "Recent change in existing mole"
+                        ],
+                        causes: [
+                            "UV radiation exposure",
+                            "Genetic predisposition",
+                            "Dysplastic nevi (atypical moles)",
+                            "Fair skin and light eye color",
+                            "Family history of melanoma"
+                        ],
+                        care: [
+                            "Use broad-spectrum SPF 30+ sunscreen daily",
+                            "Avoid peak sun hours (10 AM - 4 PM)",
+                            "Wear protective clothing and hats",
+                            "Perform monthly self-examination (ABCDE rule)",
+                            "Avoid tanning beds"
+                        ],
+                        consultation: "URGENT: Any suspicious lesion requires immediate dermatological evaluation. Early detection is critical for treatment success."
+                    },
+                    {
+                        name: "Basal Cell Carcinoma (BCC)",
+                        description: "Most common skin cancer arising from basal cells, generally slow-growing and treatable.",
+                        symptoms: [
+                            "Shiny, pearlescent bump",
+                            "Central ulceration with rolled edges",
+                            "Bleeding or crusting",
+                            "Usually on sun-exposed areas",
+                            "May appear as scar-like area"
+                        ],
+                        causes: [
+                            "UV radiation exposure",
+                            "Cumulative sun damage",
+                            "Fair skin type",
+                            "Older age",
+                            "Immunosuppression"
+                        ],
+                        care: [
+                            "Use high SPF sunscreen daily",
+                            "Seek shade during peak sun hours",
+                            "Perform regular skin self-checks",
+                            "Avoid unnecessary sun exposure",
+                            "Consider preventive measures if high risk"
+                        ],
+                        consultation: "Any suspicious lesion should be evaluated by a dermatologist. Early detection and treatment have excellent prognosis."
+                    },
+                    {
+                        name: "Squamous Cell Carcinoma (SCC)",
+                        description: "Second most common skin cancer arising from squamous cells, potentially more aggressive than BCC.",
+                        symptoms: [
+                            "Scaly, red patch",
+                            "Firm nodule with ulceration",
+                            "Bleeding or oozing",
+                            "Usually on sun-exposed areas",
+                            "May arise from actinic keratosis"
+                        ],
+                        causes: [
+                            "UV radiation damage",
+                            "Chronic sun exposure",
+                            "Fair skin and light eyes",
+                            "Immunosuppression",
+                            "Previous skin damage or scars"
+                        ],
+                        care: [
+                            "Daily broad-spectrum SPF 30+ sunscreen",
+                            "Protective clothing and headwear",
+                            "Avoid peak sun hours",
+                            "Regular professional skin checks",
+                            "Avoid tanning beds"
+                        ],
+                        consultation: "Seek immediate dermatological evaluation for any suspicious lesion. Treatment outcomes are generally excellent with early detection."
+                    }
+                ]
+            },
+            pigmentation: {
+                title: "Pigmentation Disorders",
+                description: "Conditions affecting skin pigmentation and color",
+                diseases: [
+                    {
+                        name: "Melasma",
+                        description: "Acquired disorder causing symmetric brown to gray-brown patches, especially on face.",
+                        symptoms: [
+                            "Symmetric brown or gray-brown patches",
+                            "Typically on cheeks, bridge of nose, forehead",
+                            "Usually well-demarcated",
+                            "No other skin symptoms",
+                            "More common in certain ethnicities"
+                        ],
+                        causes: [
+                            "UV radiation exposure",
+                            "Genetic predisposition",
+                            "Hormonal factors (pregnancy, oral contraceptives)",
+                            "Ethnicity (higher in darker skin types)",
+                            "Certain medications"
+                        ],
+                        care: [
+                            "Strict daily sun protection (SPF 50+)",
+                            "Use physical blockers (zinc oxide, titanium dioxide)",
+                            "Avoid triggers like hormonal medications if possible",
+                            "Use protective clothing and avoid sun",
+                            "Consider cosmetic coverage products"
+                        ],
+                        consultation: "Consult a dermatologist for treatment options including topical depigmenting agents, chemical peels, laser therapy, or combination treatments."
+                    },
+                    {
+                        name: "Hyperpigmentation",
+                        description: "Darkening of skin caused by increased melanin production in specific areas.",
+                        symptoms: [
+                            "Darker patches or spots on skin",
+                            "May be post-inflammatory",
+                            "Can affect any skin area",
+                            "More noticeable in darker skin types",
+                            "May be temporary or permanent"
+                        ],
+                        causes: [
+                            "Sun exposure (solar lentigines)",
+                            "Post-inflammatory response to injury",
+                            "Hormonal changes",
+                            "Certain medications (antimalarials, chemotherapy)",
+                            "Skin conditions like eczema or psoriasis"
+                        ],
+                        care: [
+                            "Use high SPF daily sunscreen",
+                            "Avoid sun exposure to affected areas",
+                            "Treat underlying conditions",
+                            "Avoid picking or scratching lesions",
+                            "Consider sun-protective clothing"
+                        ],
+                        consultation: "A dermatologist can recommend treatments including topical bleaching agents, chemical peels, or laser therapy based on cause and severity."
+                    },
+                    {
+                        name: "Hypopigmentation",
+                        description: "Lightening of skin caused by decreased melanin production in specific areas.",
+                        symptoms: [
+                            "Lighter patches or spots",
+                            "May appear chalky or pale",
+                            "Can be localized or widespread",
+                            "May worsen with sun exposure",
+                            "Associated with vitiligo or other conditions"
+                        ],
+                        causes: [
+                            "Vitiligo (autoimmune)",
+                            "Pityriasis alba (post-inflammatory)",
+                            "Chemical exposure or irritation",
+                            "Injury or trauma to skin",
+                            "Fungal infections (tinea versicolor)"
+                        ],
+                        care: [
+                            "Identify and treat underlying condition",
+                            "Use sun protection (prevents contrast)",
+                            "Avoid skin irritants",
+                            "Maintain skin hydration",
+                            "Consider cosmetic camouflage options"
+                        ],
+                        consultation: "Seek dermatological evaluation to determine underlying cause and appropriate treatment options."
+                    }
+                ]
+            },
+            vascular: {
+                title: "Vascular Conditions",
+                description: "Skin conditions affecting blood vessels and circulation",
+                diseases: [
+                    {
+                        name: "Hemangioma",
+                        description: "Benign tumor composed of blood vessels, often appearing as red or purple marks.",
+                        symptoms: [
+                            "Red, purple, or dark blue patches",
+                            "Raised or flat appearance",
+                            "May blanch with pressure",
+                            "Can be small or cover large areas",
+                            "Usually asymptomatic"
+                        ],
+                        causes: [
+                            "Abnormal proliferation of blood vessel endothelial cells",
+                            "Often congenital (present at birth)",
+                            "Unknown etiology",
+                            "Not related to sun exposure or lifestyle",
+                            "Possible genetic component"
+                        ],
+                        care: [
+                            "Monitor for changes in size or color",
+                            "Protect from trauma or irritation",
+                            "Avoid activities that could cause bleeding",
+                            "Seek professional evaluation if concerned",
+                            "Cosmetic camouflage if desired"
+                        ],
+                        consultation: "Consult a dermatologist or vascular specialist if hemangioma is growing, bleeding, or cosmetically concerning. Treatment options may include laser therapy or surgery."
+                    },
+                    {
+                        name: "Port-Wine Stain (Nevus Flammeus)",
+                        description: "Congenital vascular malformation causing persistent pink to deep purple discoloration.",
+                        symptoms: [
+                            "Pink to deep purple/red patch",
+                            "Usually present at birth",
+                            "Darkens and thickens with age",
+                            "Typically on face or neck",
+                            "May develop nodules over time"
+                        ],
+                        causes: [
+                            "Developmental abnormality of capillaries",
+                            "Congenital condition (present at birth)",
+                            "Not preventable",
+                            "No genetic inheritance pattern",
+                            "Unknown exact etiology"
+                        ],
+                        care: [
+                            "Use high SPF sunscreen (can darken with sun)",
+                            "Protective clothing when exposed to sun",
+                            "Cosmetic camouflage makeup available",
+                            "Regular dermatological monitoring",
+                            "Emotional support if cosmetically concerning"
+                        ],
+                        consultation: "Dermatologist consultation for treatment options, which may include pulsed dye laser therapy for potential lightening of appearance."
+                    }
+                ]
+            },
+            normal: {
+                title: "Normal & Other Conditions",
+                description: "Common normal skin conditions and benign findings",
+                diseases: [
+                    {
+                        name: "Seborrheic Keratosis",
+                        description: "Common benign growth appearing as brown, black, or tan wart-like spots.",
+                        symptoms: [
+                            "Brown to black waxy or scaly growth",
+                            "Warty or greasy appearance",
+                            "Can vary in size",
+                            "Usually on trunk or face",
+                            "Itching or irritation if rubbed"
+                        ],
+                        causes: [
+                            "Benign proliferation of skin cells",
+                            "Age-related (more common with aging)",
+                            "Genetic predisposition",
+                            "Not caused by sun exposure",
+                            "Not contagious or malignant"
+                        ],
+                        care: [
+                            "No treatment necessary unless irritated",
+                            "Avoid scratching or picking",
+                            "Keep area clean and dry",
+                            "Monitor for changes (though benign)",
+                            "Cosmetic removal available if desired"
+                        ],
+                        consultation: "See a dermatologist if growth changes appearance, bleeds, or becomes irritated. Removal is cosmetic and should be done by a professional."
+                    },
+                    {
+                        name: "Freckles (Ephelides)",
+                        description: "Small, flat, tan or light brown spots caused by localized melanin production.",
+                        symptoms: [
+                            "Small tan or brown spots",
+                            "Typically on face, shoulders, arms",
+                            "More prominent in sun-exposed areas",
+                            "Tend to darken with sun exposure",
+                            "Usually fade in winter"
+                        ],
+                        causes: [
+                            "Genetic predisposition",
+                            "UV radiation stimulation of melanin",
+                            "Fair skin type with red hair",
+                            "Celtic or Scandinavian ancestry",
+                            "Natural variation in pigmentation"
+                        ],
+                        care: [
+                            "Use daily high SPF sunscreen",
+                            "Protective clothing in sun",
+                            "Avoid peak sun hours if possible",
+                            "Cosmetic acceptance or coverage if desired",
+                            "Regular skin checks"
+                        ],
+                        consultation: "Freckles are benign and require no treatment. Consult a dermatologist if you're concerned about any changing spots."
+                    },
+                    {
+                        name: "Moles (Nevi)",
+                        description: "Common benign skin growths composed of melanocytes, present in most people.",
+                        symptoms: [
+                            "Brown or black spots or raised bumps",
+                            "Usually round or oval",
+                            "Can appear anywhere on body",
+                            "Present since childhood or develop over time",
+                            "Generally stable"
+                        ],
+                        causes: [
+                            "Proliferation of melanocytes",
+                            "Genetic predisposition",
+                            "Sun exposure (may increase number)",
+                            "Hormonal changes can affect appearance",
+                            "Normal variation in skin"
+                        ],
+                        care: [
+                            "Monitor using ABCDE rule (Asymmetry, Border, Color, Diameter, Evolution)",
+                            "Use sunscreen to prevent new moles",
+                            "Perform monthly self-examination",
+                            "Avoid trauma to moles",
+                            "Seek professional evaluation if changes noted"
+                        ],
+                        consultation: "Regular dermatological monitoring recommended, especially if you have many moles or family history of skin cancer. Any changing mole requires professional evaluation."
+                    }
+                ]
+            }
+        };
+
+        // Current state
+        let currentCategory = 'inflammatory';
+        let currentDisease = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const focusDisease = "{{ focus_disease }}";
+            
+            // Setup category navigation
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    selectCategory(this.dataset.category);
+                });
+            });
+
+            // Load initial category
+            loadCategory(currentCategory);
+
+            // Auto-focus on disease if coming from result page
+            if (focusDisease && focusDisease !== 'None') {
+                setTimeout(() => {
+                    findAndSelectDisease(focusDisease);
+                }, 500);
+            }
+        });
+
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            // Update active state
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.category === category) {
+                    item.classList.add('active');
+                }
+            });
+
+            loadCategory(category);
+        }
+
+        function loadCategory(category) {
+            const categoryData = diseaseDatabase[category];
+            const listContainer = document.getElementById('diseaseList');
+            const headerTitle = document.getElementById('categoryTitle');
+            const headerDesc = document.getElementById('categoryDesc');
+
+            headerTitle.textContent = categoryData.title;
+            headerDesc.textContent = categoryData.description;
+
+            listContainer.innerHTML = '';
+            categoryData.diseases.forEach(disease => {
+                const diseaseItem = document.createElement('div');
+                diseaseItem.className = 'disease-item';
+                diseaseItem.textContent = disease.name;
+                diseaseItem.addEventListener('click', () => selectDisease(category, disease));
+                listContainer.appendChild(diseaseItem);
+            });
+
+            // Clear detail view
+            document.getElementById('diseaseDetailContainer').innerHTML = '';
+            currentDisease = null;
+        }
+
+        function selectDisease(category, disease) {
+            currentDisease = disease;
+
+            // Update selected state
+            document.querySelectorAll('.disease-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.textContent === disease.name) {
+                    item.classList.add('selected');
+                }
+            });
+
+            displayDiseaseDetail(category, disease);
+        }
+
+        function displayDiseaseDetail(category, disease) {
+            const detailContainer = document.getElementById('diseaseDetailContainer');
+            const categoryEmoji = {
+                inflammatory: '🔴',
+                infectious: '🦠',
+                autoimmune: '⚡',
+                tumors: '🔍',
+                pigmentation: '🎨',
+                vascular: '🩸',
+                normal: '✓'
+            };
+
+            const categoryNames = {
+                inflammatory: 'Inflammatory',
+                infectious: 'Infectious',
+                autoimmune: 'Autoimmune',
+                tumors: 'Tumors & Growths',
+                pigmentation: 'Pigmentation',
+                vascular: 'Vascular',
+                normal: 'Normal & Other'
+            };
+
+            detailContainer.innerHTML = `
+                <div class="disease-detail active">
+                    <h2>${disease.name}</h2>
+                    <span class="category-badge">${categoryEmoji[category]} ${categoryNames[category]}</span>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-section">
+                            <h3>Description</h3>
+                            <p>${disease.description}</p>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>Common Symptoms</h3>
+                            <ul>
+                                ${disease.symptoms.map(symptom => `<li>${symptom}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>Possible Causes</h3>
+                            <ul>
+                                ${disease.causes.map(cause => `<li>${cause}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>General Care Guidance</h3>
+                            <ul>
+                                ${disease.care.map(care => `<li>${care}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="consultation-alert">
+                            <strong>When to Consult a Healthcare Professional:</strong>
+                            <p>${disease.consultation}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Scroll to detail
+            detailContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function findAndSelectDisease(diseaseName) {
+            for (const [categoryKey, categoryData] of Object.entries(diseaseDatabase)) {
+                const disease = categoryData.diseases.find(d => d.name.toLowerCase() === diseaseName.toLowerCase());
+                if (disease) {
+                    selectCategory(categoryKey);
+                    setTimeout(() => {
+                        selectDisease(categoryKey, disease);
+                    }, 300);
+                    return;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

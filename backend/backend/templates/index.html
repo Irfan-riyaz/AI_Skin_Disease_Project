@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Skin Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">SkinCare AI</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('disease_dictionary') }}">Disease Dictionary</a>
+        <a href="{{ url_for('feedback') }}">Feedback</a>
+    </nav>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero" style="
+background-image: linear-gradient(rgba(10,61,98,0.85), rgba(10,61,98,0.85)),
+url('https://images.unsplash.com/photo-1580281657527-47f249e8f4df');
+">
+    <div class="hero-content">
+        <h1>AI-Based Skin Disease Detection</h1>
+        <p>
+            An intelligent healthcare support system that uses Artificial Intelligence
+            to analyze skin images and provide early screening insights.
+            This system assists users but does not replace professional medical diagnosis.
+        </p>
+        <a href="{{ url_for('login') }}" class="cta-btn">Start Skin Check</a>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+
+        <div class="step">
+            <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="upload">
+            <h3>Upload Image</h3>
+            <p>Upload a clear image of the affected skin area.</p>
+        </div>
+
+        <div class="step">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="analysis">
+            <h3>AI Analysis</h3>
+            <p>Our AI model analyzes skin patterns using deep learning.</p>
+        </div>
+
+        <div class="step">
+            <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png" alt="prediction">
+            <h3>Prediction</h3>
+            <p>The system predicts the possible skin condition with confidence.</p>
+        </div>
+
+        <div class="step">
+            <img src="https://cdn-icons-png.flaticon.com/512/3022/3022297.png" alt="guidance">
+            <h3>Medical Guidance</h3>
+            <p>Receive dermatologist recommendations and a downloadable report.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- MEDICAL TIPS -->
+<section class="tips">
+    <h2>Skin Care & Prevention Tips</h2>
+    <div class="tips-content">
+        <p>Avoid excessive sun exposure</p>
+        <p>Keep skin clean and moisturized</p>
+        <p>Monitor changes in moles or lesions</p>
+        <p>Consult a dermatologist for persistent symptoms</p>
+    </div>
+</section>
+
+<!-- SUPPORTED CONDITIONS -->
+<section class="conditions">
+    <h2>Supported Skin Conditions</h2>
+    <p class="conditions-subtitle">
+        Our AI model is trained on clinically relevant skin patterns
+        to support early screening and awareness.
+    </p>
+
+    <div class="condition-cards">
+
+        <div class="condition-card">
+            <span class="badge cancer">High Risk</span>
+            <h3>Skin Cancer (Early Screening)</h3>
+            <p>
+                Identifies suspicious skin lesions based on texture,
+                color variation, and irregular boundaries.
+            </p>
+            <ul>
+                <li>Early risk indication</li>
+                <li>Probability-based prediction</li>
+                <li>Doctor consultation advised</li>
+            </ul>
+        </div>
+
+        <div class="condition-card">
+            <span class="badge benign">Low Risk</span>
+            <h3>Benign Skin Lesions</h3>
+            <p>
+                Detects non-cancerous skin conditions such as moles
+                and pigmentation abnormalities.
+            </p>
+            <ul>
+                <li>Reduces unnecessary panic</li>
+                <li>Monitoring recommendations</li>
+                <li>No diagnosis claim</li>
+            </ul>
+        </div>
+
+        <div class="condition-card">
+            <span class="badge inflammatory">Moderate</span>
+            <h3>Inflammatory Conditions</h3>
+            <p>
+                Supports detection of inflammation-related skin issues
+                caused by allergies, infection, or lifestyle factors.
+            </p>
+            <ul>
+                <li>Redness & texture detection</li>
+                <li>Preventive care guidance</li>
+                <li>Clinical confirmation needed</li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+
+<!-- DISCLAIMER -->
+<section class="disclaimer">
+    <p>
+        ⚠️ This AI system does not provide medical diagnosis.
+        Always consult a certified dermatologist for confirmation.
+    </p>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 AI Dermatologist | Healthcare AI Project</p>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</footer>
+
+</body>
+</html>

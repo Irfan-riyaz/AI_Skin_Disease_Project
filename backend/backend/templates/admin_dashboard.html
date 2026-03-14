@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - AI Skin Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #0a3d62 0%, #1e5a8e 100%);
+            color: white;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .admin-header h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .admin-header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .admin-nav a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .admin-nav a.logout {
+            background: rgba(255,63,52,0.3);
+            border: 1px solid rgba(255,63,52,0.5);
+        }
+
+        .admin-nav a.logout:hover {
+            background: rgba(255,63,52,0.5);
+        }
+
+        .admin-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 50px 30px;
+        }
+
+        .admin-title {
+            margin-bottom: 40px;
+        }
+
+        .admin-title h2 {
+            color: #0a3d62;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .admin-title p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            border-top: 4px solid #0a3d62;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.users {
+            border-top-color: #0a3d62;
+        }
+
+        .stat-card.predictions {
+            border-top-color: #27ae60;
+        }
+
+        .stat-card.feedback {
+            border-top-color: #f39c12;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #0a3d62;
+            margin: 15px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            opacity: 0.7;
+        }
+
+        .stat-subtitle {
+            font-size: 13px;
+            color: #bbb;
+            margin-top: 10px;
+        }
+
+        /* Sections */
+        .admin-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .section-header h3 {
+            color: #0a3d62;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .section-header .filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .section-header button {
+            padding: 8px 15px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .section-header button:hover {
+            background: #e0e0e0;
+        }
+
+        .section-header button.active {
+            background: #0a3d62;
+            color: white;
+            border-color: #0a3d62;
+        }
+
+        /* User List */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .user-item {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: center;
+            padding: 20px;
+            background: #f9fbfc;
+            border-radius: 8px;
+            border-left: 4px solid #0a3d62;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: #f0f5f9;
+        }
+
+        .user-info h4 {
+            color: #0a3d62;
+            margin: 0 0 5px 0;
+            font-size: 15px;
+        }
+
+        .user-info p {
+            color: #888;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .user-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .user-type {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e3f2fd;
+            color: #0a3d62;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Feedback List */
+        .feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .feedback-item {
+            padding: 20px;
+            background: #f9fbfc;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-item:hover {
+            background: #fffbf0;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .feedback-header h4 {
+            color: #0a3d62;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .feedback-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .feedback-message {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .feedback-email {
+            color: #888;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* Admin Action Buttons */
+        .btn-edit, .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .user-type-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            color: #0a3d62;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-type-select:hover {
+            border-color: #0a3d62;
+            box-shadow: 0 2px 5px rgba(10, 61, 98, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin: 0 0 8px 0;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #0a3d62;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: #0a3d62;
+            color: white;
+        }
+
+        .pagination .active {
+            background: #0a3d62;
+            color: white;
+            border-color: #0a3d62;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .user-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .admin-nav {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .admin-content {
+                padding: 20px 15px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">SkinCare AI</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('upload') }}">Dashboard</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('feedback') }}">Feedback</a>
+    </nav>
+</header>
+
+<!-- Admin Header -->
+<div class="admin-header">
+    <div>
+        <h1>Admin Dashboard</h1>
+        <p>System Management & Analytics</p>
+    </div>
+    <div class="admin-nav">
+        <a href="{{ url_for('upload') }}">Back to Main</a>
+        <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    </div>
+</div>
+
+<!-- Admin Content -->
+<div class="admin-content">
+
+    <!-- Dashboard Title -->
+    <div class="admin-title">
+        <h2>Welcome to Admin Dashboard</h2>
+        <p>Monitor system metrics, user activity, and manage feedback</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-grid">
+        <div class="stat-card users">
+            <div class="stat-label">📊 Total Users</div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-subtitle">Registered Accounts</div>
+        </div>
+
+        <div class="stat-card predictions">
+            <div class="stat-label">🔍 Total Predictions</div>
+            <div class="stat-value">{{ total_predictions | default(0) }}</div>
+            <div class="stat-subtitle">Analyses Performed</div>
+        </div>
+
+        <div class="stat-card feedback">
+            <div class="stat-label">💬 Total Feedback</div>
+            <div class="stat-value">{{ total_feedback }}</div>
+            <div class="stat-subtitle">User Submissions</div>
+        </div>
+    </div>
+
+    <!-- Users Section -->
+    <div class="admin-section">
+        <div class="section-header">
+            <h3>👥 User Accounts</h3>
+            <div class="filter">
+                <button class="active" onclick="filterUsers('all')">All</button>
+                <button onclick="filterUsers('active')">Active</button>
+                <button onclick="filterUsers('user')">Users</button>
+                <button onclick="filterUsers('admin')">Admins</button>
+            </div>
+        </div>
+
+        <div class="user-list">
+            {% if users %}
+                {% for user in users %}
+                    <div class="user-item" data-user-id="{{ user['id'] }}">
+                        <div class="user-info">
+                            <h4>{{ user['username'] }}</h4>
+                            <p class="email-display" style="cursor: pointer; color: #0066cc;" title="Click to edit email" onclick="editEmail({{ user['id'] }}, this)">{{ user['email'] }}</p>
+                        </div>
+                        <div class="user-info">
+                            <p style="font-size: 12px; color: #999;">Phone</p>
+                            <p class="phone-display" style="cursor: pointer; color: #0066cc;" title="Click to edit phone" onclick="editPhone({{ user['id'] }}, this)">{{ user.get('phone', 'N/A') }}</p>
+                        </div>
+                        <div class="user-info">
+                            <p style="font-size: 12px; color: #999;">Registered</p>
+                            <p>{{ user.get('created_at', 'N/A') }}</p>
+                        </div>
+                        <div>
+                            <select class="user-type-select" data-field="account_type" data-user-id="{{ user['id'] }}" title="Click to change user type">
+                                <option value="user" {% if user.get('account_type') == 'user' %}selected{% endif %}>User</option>
+                                <option value="admin" {% if user.get('account_type') == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-delete" onclick="deleteUser({{ user['id'] }})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">👤</div>
+                    <h3>No Users Found</h3>
+                    <p>No user accounts to display</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="admin-section">
+        <div class="section-header">
+            <h3>💬 User Feedback</h3>
+            <div class="filter">
+                <button class="active" onclick="filterFeedback('all')">All</button>
+                <button onclick="filterFeedback('recent')">Recent</button>
+                <button onclick="filterFeedback('positive')">Positive</button>
+            </div>
+        </div>
+
+        <div class="feedback-list">
+            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                <strong>Total Feedback Count: <span id="feedback-count" style="color: #f39c12; font-size: 18px;">{{ total_feedback }}</span></strong>
+            </div>
+            {% if feedback %}
+                {% for item in feedback %}
+                    <div class="feedback-item" data-feedback-id="{{ item['id'] }}">
+                        <div class="feedback-header">
+                            <div style="flex: 1;">
+                                <h4>{{ item['name'] }}</h4>
+                                <div class="feedback-email">📧 {{ item['email'] }}</div>
+                            </div>
+                            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                <span class="feedback-date">{{ item.get('created_at', 'N/A') }}</span>
+                                <button class="btn-delete" onclick="deleteFeedback({{ item['id'] }})">🗑️ Delete</button>
+                            </div>
+                        </div>
+                        <div class="feedback-message">{{ item['message'] }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <h3>No Feedback Yet</h3>
+                    <p>User feedback will appear here</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Load stats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        refreshStats();
+        // Set up account type change listeners
+        document.querySelectorAll('select[data-field="account_type"]').forEach(select => {
+            select.addEventListener('change', function() {
+                updateAccountType(this);
+            });
+        });
+    });
+
+    // Stats auto-refresh every 30 seconds
+    setInterval(refreshStats, 30000);
+
+    async function refreshStats() {
+        try {
+            const response = await fetch('/api/admin/stats');
+            if (response.ok) {
+                const data = await response.json();
+                // Update stat cards with exact numbers
+                const statCards = document.querySelectorAll('.stat-card .stat-value');
+                if (statCards[0]) statCards[0].textContent = data.total_users;
+                if (statCards[1]) statCards[1].textContent = data.predictions || 0;
+                if (statCards[2]) statCards[2].textContent = data.total_feedback;
+            }
+        } catch (error) {
+            console.error('Error refreshing stats:', error);
+        }
+    }
+
+    async function updateAccountType(selectElement) {
+        const userId = selectElement.dataset.userId;
+        const newAccountType = selectElement.value;
+        const userItem = document.querySelector(`[data-user-id="${userId}"]`);
+        const currentEmail = userItem.querySelector('.email-display').textContent;
+        
+        try {
+            const response = await fetch(`/api/admin/user/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: currentEmail,
+                    phone: '',
+                    account_type: newAccountType
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Account type updated successfully!');
+                refreshStats();
+            } else {
+                const error = await response.json();
+                alert('❌ Error: ' + (error.error || 'Unknown error'));
+                // Revert the change
+                selectElement.value = selectElement.options[0].value;
+            }
+        } catch (error) {
+            console.error('Error updating account type:', error);
+            alert('❌ Error updating account type: ' + error.message);
+            // Revert the change
+            selectElement.value = selectElement.options[0].value;
+        }
+    }
+
+    async function editEmail(userId, emailElement) {
+        const currentEmail = emailElement.textContent.trim();
+        const newEmail = prompt('Enter new email:', currentEmail);
+        if (newEmail === null) return;
+        
+        if (newEmail.trim() === '') {
+            alert('❌ Email cannot be empty!');
+            return;
+        }
+        
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail.trim())) {
+            alert('❌ Please enter a valid email address!');
+            return;
+        }
+        
+        const userItem = document.querySelector(`[data-user-id="${userId}"]`);
+        const accountType = userItem.querySelector('select[data-field="account_type"]').value;
+        const currentPhone = userItem.querySelector('.phone-display').textContent.trim();
+        
+        try {
+            const response = await fetch(`/api/admin/user/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: newEmail.trim(),
+                    phone: currentPhone === 'N/A' ? '' : currentPhone,
+                    account_type: accountType
+                })
+            });
+            
+            if (response.ok) {
+                emailElement.textContent = newEmail.trim();
+                console.log('✅ User email updated successfully!');
+                refreshStats();
+            } else {
+                const error = await response.json();
+                alert('❌ Error: ' + (error.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error updating email:', error);
+            alert('❌ Error updating email: ' + error.message);
+        }
+    }
+
+    async function editPhone(userId, phoneElement) {
+        const currentPhone = phoneElement.textContent.trim();
+        const newPhone = prompt('Enter new phone number:', currentPhone === 'N/A' ? '' : currentPhone);
+        if (newPhone === null) return;
+        
+        const userItem = document.querySelector(`[data-user-id="${userId}"]`);
+        const currentEmail = userItem.querySelector('.email-display').textContent.trim();
+        const accountType = userItem.querySelector('select[data-field="account_type"]').value;
+        
+        try {
+            const response = await fetch(`/api/admin/user/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: currentEmail,
+                    phone: newPhone.trim(),
+                    account_type: accountType
+                })
+            });
+            
+            if (response.ok) {
+                phoneElement.textContent = newPhone.trim() || 'N/A';
+                console.log('✅ User phone updated successfully!');
+                refreshStats();
+            } else {
+                const error = await response.json();
+                alert('❌ Error: ' + (error.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error updating phone:', error);
+            alert('❌ Error updating phone: ' + error.message);
+        }
+    }
+
+    async function deleteUser(userId) {
+        if (!confirm('⚠️ Are you sure you want to delete this user? This action cannot be undone.')) return;
+        
+        try {
+            const response = await fetch(`/api/admin/user/${userId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                alert('✅ User deleted successfully!');
+                const userItem = document.querySelector(`[data-user-id="${userId}"]`);
+                userItem.style.opacity = '0.5';
+                setTimeout(() => userItem.remove(), 300);
+                refreshStats();
+            } else {
+                const error = await response.json();
+                alert('❌ Error: ' + (error.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('❌ Error deleting user: ' + error.message);
+        }
+    }
+
+    async function deleteFeedback(feedbackId) {
+        if (!confirm('⚠️ Are you sure you want to delete this feedback?')) return;
+        
+        try {
+            const response = await fetch(`/api/admin/feedback/${feedbackId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                alert('✅ Feedback deleted successfully!');
+                const feedbackItem = document.querySelector(`[data-feedback-id="${feedbackId}"]`);
+                feedbackItem.style.opacity = '0.5';
+                setTimeout(() => feedbackItem.remove(), 300);
+                
+                // Update feedback count
+                const countEl = document.getElementById('feedback-count');
+                const newCount = Math.max(0, parseInt(countEl.textContent) - 1);
+                countEl.textContent = newCount;
+                
+                refreshStats();
+            } else {
+                const error = await response.json();
+                alert('❌ Error: ' + (error.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error deleting feedback:', error);
+            alert('❌ Error deleting feedback: ' + error.message);
+        }
+    }
+
+    function filterUsers(type) {
+        console.log('Filter users by:', type);
+        // Implementation for user filtering
+    }
+
+    function filterFeedback(type) {
+        console.log('Filter feedback by:', type);
+        // Implementation for feedback filtering
+    }
+</script>
+
+</body>
+</html>
