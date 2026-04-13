@@ -1,0 +1,9 @@
+gunicorn
+flask
+flask-cors
+tensorflow
+keras
+numpy
+opencv-python
+werkzeug
+pillow
