@@ -1,4 +1,8 @@
-"scripts": {
-  "build": "next build",
-  "start": "next start"
+{
+  "name": "ai-skin-disease-project",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "next build",
+    "start": "next start"
+  }
 }
